@@ -53,18 +53,91 @@ Minimize distance between aligned word pairs:
 
 We model translation as an adversarial game.
 
-### Generator (Mapping Network)
+#### Generator
 
-Maps French embeddings → English space:
+Maps French embeddings into English space:
 
 ```python
-self.l1 = nn.Linear(dim, dim, bias=False)
+nn.Linear(dim, dim, bias=False)
+```
 
-### Discriminator
+---
 
-Classifies real vs generated embeddings:
+#### Discriminator
 
-Classifies real vs generated embeddings:
+Distinguishes real English embeddings from mapped ones:
 
-```Linear(dim → 2048 → 2048 → 1)
-LeakyReLU + Dropout + Sigmoid
+```
+Linear(dim → 2048 → 2048 → 1)
+LeakyReLU
+Dropout
+Sigmoid
+```
+
+---
+
+## Training
+
+The model uses adversarial training:
+
+- Discriminator learns to separate real vs generated embeddings  
+- Generator learns to fool the discriminator  
+
+### Stabilization tricks:
+
+- Label smoothing (0.8 real / 0.2 fake)
+- Orthogonality constraint on mapping matrix
+- SGD optimizer
+
+---
+
+## Data
+
+### Embeddings
+
+```
+wiki.fr.vec
+wiki.en.vec
+```
+
+- 50,000 words
+- 300-dimensional vectors
+
+---
+
+### Dictionary
+
+```
+Train: fr-en.0-5000.txt
+Test: fr-en.5000-6500.txt
+```
+
+---
+
+## Evaluation
+
+- Nearest neighbor search in embedding space
+- Cosine similarity
+- Translation accuracy on test dictionary
+
+---
+
+## Tech Stack
+
+```
+Python
+PyTorch
+NumPy
+scikit-learn
+SciPy
+Matplotlib
+```
+
+---
+
+## Summary
+
+This project shows that word embeddings contain enough geometric structure to enable cross-lingual translation through:
+
+- Supervised linear alignment
+- Unsupervised adversarial learning (GAN)
